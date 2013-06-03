@@ -1,5 +1,4 @@
 #import "LjsUnixWhich.h"
-#import "Lumberjack.h"
 
 static NSString *LjsUnixWhichWhichLaunchPath = @"/usr/bin/which";
 
@@ -19,7 +18,6 @@ static NSString *LjsUnixWhichDefaultsCommandName = @"me.twistedpair.TwistedPair 
 
 #pragma mark Memory Management
 - (void) dealloc {
-  //NSLog(@"deallocating LjsUnixWhich");
   [self.opqueue cancelAllOperations];
 }
 
