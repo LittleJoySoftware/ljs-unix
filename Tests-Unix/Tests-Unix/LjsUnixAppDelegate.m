@@ -15,7 +15,6 @@ static NSString *TpUnixOperationTestsDoAirDropRead = @"airdrop read";
 - (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self stopAndReleaseRepeatingTimers];
-  self.longRunningFindOp = nil;
 }
 
 
@@ -88,7 +87,7 @@ static NSString *TpUnixOperationTestsDoAirDropRead = @"airdrop read";
 
 - (void) doLsTest {
   NSString *command = @"/bin/ls";
-  NSArray *args = [NSArray arrayWithObject:@"-al"];
+  NSArray *args = @[@"-al"];
   LjsUnixOperation *uop = [[LjsUnixOperation alloc]
                            initWithLaunchPath:command
                            launchArgs:args
@@ -101,7 +100,7 @@ static NSString *TpUnixOperationTestsDoAirDropRead = @"airdrop read";
 
 - (void) doLongRunningFindWithCancelSignalSentToOperation {
   NSString *command = @"/usr/bin/find";
-  NSArray *args = [NSArray arrayWithObjects:@"/", @"-name", @".DS_Store", @"-print", nil];
+  NSArray *args = @[@"/", @"-name", @".DS_Store", @"-print"];
   
   
   LjsUnixOperation *uop = [[LjsUnixOperation alloc]
@@ -126,7 +125,7 @@ static NSString *TpUnixOperationTestsDoAirDropRead = @"airdrop read";
 
 - (void) doLocateOperation {
   NSString *command = @"/usr/bin/locate";
-  NSArray *args = [NSArray arrayWithObjects:@"-s", @".DS_Store", nil];
+  NSArray *args = @[@"-s", @".DS_Store"];
   
   LjsUnixOperation *uop = [[LjsUnixOperation alloc]
                            initWithLaunchPath:command
@@ -141,7 +140,7 @@ static NSString *TpUnixOperationTestsDoAirDropRead = @"airdrop read";
 
 - (void) doIpconfigGetIfaddr {
   NSString *command = @"/usr/sbin/ipconfig";
-  NSArray *args = [NSArray arrayWithObjects:@"getifaddr", @"en0", nil];
+  NSArray *args = @[@"getifaddr", @"en0"];
   LjsUnixOperation *uop = [[LjsUnixOperation alloc]
                            initWithLaunchPath:command
                            launchArgs:args
@@ -154,7 +153,7 @@ static NSString *TpUnixOperationTestsDoAirDropRead = @"airdrop read";
 
 - (void) doCommandThatWillFail {
   NSString *command = @"/sbin/ifconfig";
-  NSArray *args = [NSArray arrayWithObjects:@"status", nil];
+  NSArray *args = @[@"status"];
   
   LjsUnixOperation *uop = [[LjsUnixOperation alloc]
                            initWithLaunchPath:command
@@ -167,7 +166,7 @@ static NSString *TpUnixOperationTestsDoAirDropRead = @"airdrop read";
 
 - (void) doReadDefaultsForAirDrop {
   NSString *command = @"/usr/bin/defaults";
-  NSArray *args = [NSArray arrayWithObjects:@"read", @"com.apple.NetworkBrowser", @"BrowseAllInterfaces", nil];
+  NSArray *args = @[@"read", @"com.apple.NetworkBrowser", @"BrowseAllInterfaces"];
   
   LjsUnixOperation *uop = [[LjsUnixOperation alloc]
                            initWithLaunchPath:command

@@ -4,10 +4,10 @@
 @interface LjsUnixAppDelegate : NSObject
 <NSApplicationDelegate, LjsUnixOperationCallbackDelegate>
 
-@property (assign) IBOutlet NSWindow *window;
-@property (nonatomic, retain) NSOperationQueue *opqueue;
-@property (nonatomic, retain) LjsUnixOperation *longRunningFindOp;
-@property (nonatomic, retain) NSTimer *cancelOpTimer;
+@property (weak) IBOutlet NSWindow *window;
+@property (nonatomic, strong) NSOperationQueue *opqueue;
+@property (nonatomic, strong) LjsUnixOperation *longRunningFindOp;
+@property (nonatomic, strong) NSTimer *cancelOpTimer;
 
 #pragma mark Tests
 - (void) doLsTest;

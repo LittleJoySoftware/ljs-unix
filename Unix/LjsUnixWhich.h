@@ -20,7 +20,7 @@
 /** the path to defaults */
 @property (nonatomic, copy) NSString *defaultsLaunchPath;
 /** the operation queue */
-@property (atomic, retain) NSOperationQueue *opqueue;
+@property (atomic, strong) NSOperationQueue *opqueue;
 
 /** @name Async Find Launch Paths */
 /**

@@ -5,28 +5,6 @@
 
 #pragma mark Memory Management
 
-@synthesize commonName;
-@synthesize exitCode;
-@synthesize launchError;
-@synthesize executionError;
-@synthesize stdOutput;
-@synthesize errOutput;
-@synthesize launchPath;
-@synthesize arguments;
-@synthesize wasCancelled;
-
-- (void) dealloc {
-  //DDLogDebug(@"deallocating TpUnixOperationResult");
-  self.commonName = nil;
-  self.launchError = nil;
-  self.executionError = nil;
-  self.stdOutput = nil;
-  self.errOutput = nil;
-  self.launchPath = nil;
-  self.arguments = nil;
-  [super dealloc];
-}
-
 - (id) initWithCommonName:  (NSString *) aCommonName  
                  exitCode: (NSInteger) anExitCode  
               launchError: (NSError *) aLaunchError  

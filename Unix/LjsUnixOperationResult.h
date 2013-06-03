@@ -14,17 +14,17 @@
 /** the exit code */
 @property (nonatomic, assign) NSInteger exitCode;
 /** the launch error - nil if there was no error */
-@property (nonatomic, retain) NSError *launchError;
+@property (nonatomic, strong) NSError *launchError;
 /** the execution error - nil if there was no error */
-@property (nonatomic, retain) NSError *executionError;
+@property (nonatomic, strong) NSError *executionError;
 /** the data collected from stdout */
 @property (nonatomic, copy) NSString *stdOutput;
 /** the data collected from stderr */
 @property (nonatomic, copy) NSString *errOutput;
 /** the launch path of the command */
-@property (nonatomic, retain) NSString *launchPath;
+@property (nonatomic, strong) NSString *launchPath;
 /** the arguments of the command */
-@property (nonatomic, retain) NSArray *arguments;
+@property (nonatomic, strong) NSArray *arguments;
 /** true iff the operation was cancelled */
 @property (nonatomic, assign) BOOL wasCancelled;
 

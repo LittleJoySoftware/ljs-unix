@@ -17,20 +17,10 @@ static NSString *LjsUnixWhichDefaultsCommandName = @"me.twistedpair.TwistedPair 
 
 @implementation LjsUnixWhich
 
-@synthesize ifconfigLaunchPath;
-@synthesize ipconfigLaunchPath;
-@synthesize defaultsLaunchPath;
-@synthesize opqueue;
-
 #pragma mark Memory Management
 - (void) dealloc {
   //NSLog(@"deallocating LjsUnixWhich");
   [self.opqueue cancelAllOperations];
-  self.opqueue = nil;
-  self.ifconfigLaunchPath = nil;
-  self.ipconfigLaunchPath = nil;
-  self.defaultsLaunchPath = nil;
-  [super dealloc];
 }
 
 - (id) init {
@@ -41,8 +31,8 @@ static NSString *LjsUnixWhichDefaultsCommandName = @"me.twistedpair.TwistedPair 
     self.ipconfigLaunchPath = LjsUnixWhichIpconfigDefaultLaunchPath;
     self.defaultsLaunchPath = LjsUnixWhichDefaultDefaultsLaunchPath;
     
-    self.opqueue = [[[NSOperationQueue alloc]
-                     init] autorelease];
+    self.opqueue = [[NSOperationQueue alloc]
+                     init];
     
     [self asyncFindIfConfigLaunchPath];
     [self asyncFindIpConfigLaunchPath];
@@ -116,33 +106,33 @@ static NSString *LjsUnixWhichDefaultsCommandName = @"me.twistedpair.TwistedPair 
 
 - (void) asyncFindIfConfigLaunchPath {
   NSLog(@"starting async find of ifconfig launch path");
-  LjsUnixOperation *uop = [[[LjsUnixOperation alloc]
+  LjsUnixOperation *uop = [[LjsUnixOperation alloc]
                            initWithLaunchPath:LjsUnixWhichWhichLaunchPath
-                           launchArgs:[NSArray arrayWithObject:LjsUnixWhichIfconfig]
+                           launchArgs:@[LjsUnixWhichIfconfig]
                            commonName:LjsUnixWhichIfconfigCommandName
-                           callbackDelegate:self] autorelease];
+                           callbackDelegate:self];
   
   [self.opqueue addOperation:uop];
 }
 
 - (void) asyncFindIpConfigLaunchPath {
   NSLog(@"starting async find of ipconfig launch path");
-  LjsUnixOperation *uop = [[[LjsUnixOperation alloc]
+  LjsUnixOperation *uop = [[LjsUnixOperation alloc]
                            initWithLaunchPath:LjsUnixWhichWhichLaunchPath
-                           launchArgs:[NSArray arrayWithObject:LjsUnixWhichIpconfig]
+                           launchArgs:@[LjsUnixWhichIpconfig]
                            commonName:LjsUnixWhichIpconfigCommandName
-                           callbackDelegate:self] autorelease];
+                           callbackDelegate:self];
   
   [self.opqueue addOperation:uop];
 }
 
 - (void) asyncFindDefaultsLaunchPath {
   NSLog(@"starting async find of defaults launch path");
-  LjsUnixOperation *uop = [[[LjsUnixOperation alloc]
+  LjsUnixOperation *uop = [[LjsUnixOperation alloc]
                            initWithLaunchPath:LjsUnixWhichWhichLaunchPath
-                           launchArgs:[NSArray arrayWithObject:LjsUnixWhichDefaults]
+                           launchArgs:@[LjsUnixWhichDefaults]
                            commonName:LjsUnixWhichDefaultsCommandName
-                           callbackDelegate:self] autorelease];
+                           callbackDelegate:self];
   
   [self.opqueue addOperation:uop];
 }

@@ -24,9 +24,9 @@
 		F5C1BFA016E00E7800F14075 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F5C1BF9F16E00E7800F14075 /* main.m */; };
 		F5C1BFA716E00E7800F14075 /* LjsUnixAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F5C1BFA616E00E7800F14075 /* LjsUnixAppDelegate.m */; };
 		F5C1BFAA16E00E7900F14075 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F5C1BFA816E00E7900F14075 /* MainMenu.xib */; };
-		F5C1BFB716E00E8F00F14075 /* LjsUnixOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F5C1BFB216E00E8F00F14075 /* LjsUnixOperation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		F5C1BFB816E00E8F00F14075 /* LjsUnixOperationResult.m in Sources */ = {isa = PBXBuildFile; fileRef = F5C1BFB416E00E8F00F14075 /* LjsUnixOperationResult.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		F5C1BFB916E00E8F00F14075 /* LjsUnixWhich.m in Sources */ = {isa = PBXBuildFile; fileRef = F5C1BFB616E00E8F00F14075 /* LjsUnixWhich.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		F5C1BFB716E00E8F00F14075 /* LjsUnixOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F5C1BFB216E00E8F00F14075 /* LjsUnixOperation.m */; settings = {COMPILER_FLAGS = ""; }; };
+		F5C1BFB816E00E8F00F14075 /* LjsUnixOperationResult.m in Sources */ = {isa = PBXBuildFile; fileRef = F5C1BFB416E00E8F00F14075 /* LjsUnixOperationResult.m */; settings = {COMPILER_FLAGS = ""; }; };
+		F5C1BFB916E00E8F00F14075 /* LjsUnixWhich.m in Sources */ = {isa = PBXBuildFile; fileRef = F5C1BFB616E00E8F00F14075 /* LjsUnixWhich.m */; settings = {COMPILER_FLAGS = ""; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -387,6 +387,7 @@
 		F5C1BFAE16E00E7900F14075 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Tests-Unix/Tests-Unix-Prefix.pch";
@@ -404,6 +405,7 @@
 		F5C1BFAF16E00E7900F14075 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Tests-Unix/Tests-Unix-Prefix.pch";

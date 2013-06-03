@@ -6,17 +6,6 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
 
 @implementation LjsUnixOperation
 
-@synthesize commonName;
-@synthesize standardOutput;
-@synthesize standardError;
-@synthesize outputClosed;
-@synthesize errorClosed;
-@synthesize taskComplete;
-@synthesize task;
-@synthesize trimSet;
-@synthesize callbackDelegate;
-
-
 #pragma mark Memory Management
 - (void) dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self 
@@ -25,12 +14,6 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
   [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                   name:NSTaskDidTerminateNotification
                                                 object:nil];
-  self.commonName = nil;
-  self.standardOutput = nil;
-  self.standardError = nil;
-  self.trimSet = nil;
-  self.task = nil;
-  [super dealloc];
 }
 
 /**
@@ -58,24 +41,19 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
     NSMutableData *data;
     data = [[NSMutableData alloc] init];
     self.standardOutput = data;
-    [data release];
     data = [[NSMutableData alloc] init];
     self.standardError = data;
-    [data release];
     
     NSTask *tTask = [[NSTask alloc] init];
     self.task = tTask;
-    [tTask release];
     
     [self.task setLaunchPath:aLaunchPath];
     [self.task setArguments:aLaunchArgs];
     NSPipe *tPipe;
     tPipe = [[NSPipe alloc] init];
     [self.task setStandardOutput:tPipe];
-    [tPipe release];
     tPipe = [[NSPipe alloc] init];
     [self.task setStandardError:tPipe];
-    [tPipe release];
     
     // might consider making these ivars for memory reasons
     NSFileHandle *stdOut = [[self.task standardOutput] fileHandleForReading];
@@ -183,9 +161,8 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
  @param aData the data
  */
 - (NSString *) stringWithData:(NSData *) aData {
-  return [[[NSString alloc] initWithData:aData
-                                encoding:NSUTF8StringEncoding]
-          autorelease];
+  return [[NSString alloc] initWithData:aData
+                                encoding:NSUTF8StringEncoding];
 }
 
 /**
@@ -193,8 +170,7 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
  @param aException the exception to make the error from
  */
 - (NSError *) errorWithException:(NSException *) aException {
-  NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                            [aException reason], NSLocalizedDescriptionKey, nil];
+  NSDictionary *userInfo = @{NSLocalizedDescriptionKey: [aException reason]};
 
   NSError *result = [NSError errorWithDomain:LjsUnixOperationTaskErrorDomain
                                         code:LjsUnixOperationLaunchErrorCode
@@ -210,8 +186,7 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
   NSError *result = nil;
   if ([aErrorString length] > 0) {
     NSDictionary *userInfo =
-    [NSDictionary dictionaryWithObject:aErrorString 
-                                forKey:NSLocalizedDescriptionKey];
+    @{NSLocalizedDescriptionKey: aErrorString};
     result = [NSError
               errorWithDomain:LjsUnixOperationTaskErrorDomain
               code:LjsUnixOperationExecutionErrorCode
@@ -226,93 +201,92 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
  Required method for NSOperation subclasses.
  */
 - (void) main {
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  if (![self isCancelled]) {
-  
-    // I do not think this is necessary
-    NSDictionary *environment = [[NSProcessInfo processInfo] environment];
-    [self.task setEnvironment:environment];
+  @autoreleasepool {
+    if (![self isCancelled]) {
     
-    NSError *launchError = nil;
-    NSString *outputString = nil;
-    NSString *errorString = nil;
+      // I do not think this is necessary
+      NSDictionary *environment = [[NSProcessInfo processInfo] environment];
+      [self.task setEnvironment:environment];
+      
+      NSError *launchError = nil;
+      NSString *outputString = nil;
+      NSString *errorString = nil;
 
-    @try {
-      [self.task launch];
+      @try {
+        [self.task launch];
  
-      // if the stdout and stderr are closed, then the task should be considered
-      // done.  we cannot rely on the NSTaskDidTerminateNotification notification
-      // to ever be sent.
-      while (!self.outputClosed || !self.errorClosed) {
+        // if the stdout and stderr are closed, then the task should be considered
+        // done.  we cannot rely on the NSTaskDidTerminateNotification notification
+        // to ever be sent.
+        while (!self.outputClosed || !self.errorClosed) {
 
-        // NSLog(@"is running       => %d", [self.task isRunning]);
-        // NSLog(@"is error closed  => %d", self.errorClosed);
-        // NSLog(@"is output closed => %d", self.outputClosed);
-        // NSLog(@"is cancelled     => %d", [self isCancelled]);
-        // NSLog(@"is complete      => %d", self.taskComplete);
-        
-        // could be put in the while invariant, but there are so many conditions
-        // it becomes unclear what is really driving the loop.
-        //
-        // what is essential is that if we receive a cancel message
-        // we need to respect it (see NSOperation subclassing notes).
-        //
-        // the taskComplete is syntatic sugar because in practice it is never
-        // anything but NO
-        if ([self isCancelled] || self.taskComplete) {
-          break;
+          // NSLog(@"is running       => %d", [self.task isRunning]);
+          // NSLog(@"is error closed  => %d", self.errorClosed);
+          // NSLog(@"is output closed => %d", self.outputClosed);
+          // NSLog(@"is cancelled     => %d", [self isCancelled]);
+          // NSLog(@"is complete      => %d", self.taskComplete);
+          
+          // could be put in the while invariant, but there are so many conditions
+          // it becomes unclear what is really driving the loop.
+          //
+          // what is essential is that if we receive a cancel message
+          // we need to respect it (see NSOperation subclassing notes).
+          //
+          // the taskComplete is syntatic sugar because in practice it is never
+          // anything but NO
+          if ([self isCancelled] || self.taskComplete) {
+            break;
+          }
         }
+        
+        outputString = [self stringWithData:self.standardOutput];
+        errorString = [self stringWithData:self.standardError];
+      } @catch (NSException *exception) {
+        NSLog(@"received this exception: %@", exception);
+        launchError = [self errorWithException:exception];
+      } @finally {
+        if ([self.task isRunning]) {
+          // not guaranteed to stop the task
+          [self.task terminate];
+        }
+        [[[self.task standardError] fileHandleForReading] closeFile];
+        [[[self.task standardOutput] fileHandleForReading] closeFile];
       }
       
-      outputString = [self stringWithData:self.standardOutput];
-      errorString = [self stringWithData:self.standardError];
-    } @catch (NSException *exception) {
-      NSLog(@"received this exception: %@", exception);
-      launchError = [self errorWithException:exception];
-    } @finally {
-      if ([self.task isRunning]) {
-        // not guaranteed to stop the task
-        [self.task terminate];
+      
+      NSError *executionError = [self errorWithStandardErrorString:errorString];
+      NSInteger taskExitCode = LjsUnixOperationExecutionErrorCode;
+      if (launchError == nil && ![self.task isRunning]) {
+        taskExitCode = [self.task terminationStatus];
+      } else {
+        taskExitCode = LjsUnixOperationTaskStillRunningExitCode;
       }
-      [[[self.task standardError] fileHandleForReading] closeFile];
-      [[[self.task standardOutput] fileHandleForReading] closeFile];
+      
+      if (outputString != nil) {
+        outputString = [outputString stringByTrimmingCharactersInSet:self.trimSet];
+      }
+      
+      if (errorString != nil) {
+        errorString = [errorString stringByTrimmingCharactersInSet:self.trimSet];
+      }
+      
+      LjsUnixOperationResult *tResult = [[LjsUnixOperationResult alloc]
+                                        initWithCommonName:self.commonName
+                                        exitCode:taskExitCode 
+                                        launchError:launchError 
+                                        executionError:executionError
+                                        stdOutput:outputString
+                                        errOutput:errorString
+                                        launchPath:[self.task launchPath]
+                                        arguments:[self.task arguments]
+                                        wasCancelled:[self isCancelled]];
+                                         
+      if (self.callbackDelegate != nil) {
+        [self.callbackDelegate operationCompletedWithName:self.commonName
+                                                   result:tResult];
+      } 
     }
-    
-    
-    NSError *executionError = [self errorWithStandardErrorString:errorString];
-    NSInteger taskExitCode = LjsUnixOperationExecutionErrorCode;
-    if (launchError == nil && ![self.task isRunning]) {
-      taskExitCode = [self.task terminationStatus];
-    } else {
-      taskExitCode = LjsUnixOperationTaskStillRunningExitCode;
-    }
-    
-    if (outputString != nil) {
-      outputString = [outputString stringByTrimmingCharactersInSet:self.trimSet];
-    }
-    
-    if (errorString != nil) {
-      errorString = [errorString stringByTrimmingCharactersInSet:self.trimSet];
-    }
-    
-    LjsUnixOperationResult *tResult = [[LjsUnixOperationResult alloc]
-                                      initWithCommonName:self.commonName
-                                      exitCode:taskExitCode 
-                                      launchError:launchError 
-                                      executionError:executionError
-                                      stdOutput:outputString
-                                      errOutput:errorString
-                                      launchPath:[self.task launchPath]
-                                      arguments:[self.task arguments]
-                                      wasCancelled:[self isCancelled]];
-                                       
-    if (self.callbackDelegate != nil) {
-      [self.callbackDelegate operationCompletedWithName:self.commonName
-                                                 result:tResult];
-      [tResult release];
-    } 
   }
-  [pool release];
 }
 
 

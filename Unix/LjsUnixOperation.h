@@ -57,9 +57,9 @@ typedef enum : NSUInteger {
 /** the common name of this operation  - might be better described as the unique id */
 @property (nonatomic, copy) NSString *commonName;
 /** data from stdout */
-@property (nonatomic, retain) NSMutableData *standardOutput;
+@property (nonatomic, strong) NSMutableData *standardOutput;
 /** data from stderr */
-@property (nonatomic, retain) NSMutableData *standardError;
+@property (nonatomic, strong) NSMutableData *standardError;
 /** true iff stdout is closed */
 @property (nonatomic, assign) BOOL outputClosed;
 /** true iff stderr is closed */
@@ -67,11 +67,11 @@ typedef enum : NSUInteger {
 /** true iff task is complete - this never happens, but is included for completeness */
 @property (nonatomic, assign) BOOL taskComplete;
 /** the task associated with this operation */
-@property (nonatomic, retain) NSTask *task;
+@property (nonatomic, strong) NSTask *task;
 /** a character set used to trim white space and newlines from stdout and stderr*/
-@property (nonatomic, retain) NSCharacterSet *trimSet;
+@property (nonatomic, strong) NSCharacterSet *trimSet;
 /** the callback delegate */
-@property (nonatomic, assign) id<LjsUnixOperationCallbackDelegate> callbackDelegate;
+@property (nonatomic, unsafe_unretained) id<LjsUnixOperationCallbackDelegate> callbackDelegate;
 
 /** @name Memory Management */
 - (id) initWithLaunchPath: (NSString *) aLaunchPath 
