@@ -9,7 +9,6 @@
 @property (nonatomic, retain) LjsUnixOperation *longRunningFindOp;
 @property (nonatomic, retain) NSTimer *cancelOpTimer;
 
-
 #pragma mark Tests
 - (void) doLsTest;
 - (void) doLongRunningFindWithCancelSignalSentToOperation;
@@ -18,6 +17,5 @@
 - (void) doIpconfigGetIfaddr;
 - (void) doCommandThatWillFail;
 - (void) doReadDefaultsForAirDrop;
-
 
 @end

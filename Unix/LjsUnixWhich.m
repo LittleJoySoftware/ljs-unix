@@ -1,12 +1,5 @@
 #import "LjsUnixWhich.h"
 #import "Lumberjack.h"
-#import "LjsUnixOperation.h"
-
-#ifdef LOG_CONFIGURATION_DEBUG
-static const int ddLogLevel = LOG_LEVEL_DEBUG;
-#else
-static const int ddLogLevel = LOG_LEVEL_WARN;
-#endif
 
 static NSString *LjsUnixWhichWhichLaunchPath = @"/usr/bin/which";
 
@@ -31,7 +24,7 @@ static NSString *LjsUnixWhichDefaultsCommandName = @"me.twistedpair.TwistedPair 
 
 #pragma mark Memory Management
 - (void) dealloc {
-  //DDLogDebug(@"deallocating LjsUnixWhich");
+  //NSLog(@"deallocating LjsUnixWhich");
   [self.opqueue cancelAllOperations];
   self.opqueue = nil;
   self.ifconfigLaunchPath = nil;
@@ -75,55 +68,54 @@ static NSString *LjsUnixWhichDefaultsCommandName = @"me.twistedpair.TwistedPair 
  @warning could use a refactor to reduce code duplication.
  */
 - (void) operationCompletedWithName:(NSString *)aName result:(LjsUnixOperationResult *)aResult {
-  DDLogDebug(@"operation %@ completed", aName);
   if ([LjsUnixWhichIfconfigCommandName isEqualToString:aName]) {
     if (aResult.wasCancelled == YES) {
-      DDLogDebug(@"operation was cancelled - nothing to do");
+      NSLog(@"operation was cancelled - nothing to do");
     } else if (aResult.launchError != nil) {
-      DDLogError(@"there was a launch error: %@", [aResult.launchError localizedDescription]);
+      NSLog(@"ERROR: there was a launch ERROR:  %@", [aResult.launchError localizedDescription]);
     } else if (aResult.executionError != nil) {
-      DDLogError(@"there was an execution error: %@", [aResult.executionError localizedDescription]);
+      NSLog(@"ERROR: there was an execution ERROR:  %@", [aResult.executionError localizedDescription]);
     } else if (aResult.stdOutput == nil || [aResult.stdOutput length] == 0) {
-      DDLogError(@"expected some output to standard out - found < %@ >", aResult.stdOutput);
+      NSLog(@"ERROR: expected some output to standard out - found < %@ >", aResult.stdOutput);
     } else {
-      DDLogDebug(@"setting ifconfig launch path to %@", aResult.stdOutput);
+      NSLog(@"setting ifconfig launch path to %@", aResult.stdOutput);
       self.ifconfigLaunchPath = aResult.stdOutput;
     }
   } else if ([LjsUnixWhichIpconfigCommandName isEqualToString:aName]) {
     if (aResult.wasCancelled == YES) {
-      DDLogDebug(@"operation was cancelled - nothing to do");
+      NSLog(@"operation was cancelled - nothing to do");
     } else if (aResult.launchError != nil) {
-      DDLogError(@"there was a launch error: %@", [aResult.launchError localizedDescription]);
+      NSLog(@"ERROR: there was a launch ERROR:  %@", [aResult.launchError localizedDescription]);
     } else if (aResult.executionError != nil) {
-      DDLogError(@"there was an execution error: %@", [aResult.executionError localizedDescription]);
+      NSLog(@"ERROR: there was an execution ERROR:  %@", [aResult.executionError localizedDescription]);
     } else if (aResult.stdOutput == nil || [aResult.stdOutput length] == 0) {
-      DDLogError(@"expected some output to standard out - found < %@ >", aResult.stdOutput);
+      NSLog(@"ERROR: expected some output to standard out - found < %@ >", aResult.stdOutput);
     } else {
-      DDLogDebug(@"setting ifconfig launch path to %@", aResult.stdOutput);
+      NSLog(@"setting ifconfig launch path to %@", aResult.stdOutput);
       self.ipconfigLaunchPath = aResult.stdOutput;
     }
   } else if ([LjsUnixWhichDefaultsCommandName isEqualToString:aName]) {
     if (aResult.wasCancelled == YES) {
-      DDLogDebug(@"operation was cancelled - nothing to do");
+      NSLog(@"operation was cancelled - nothing to do");
     } else if (aResult.launchError != nil) {
-      DDLogError(@"there was a launch error: %@", [aResult.launchError localizedDescription]);
+      NSLog(@"ERROR: there was a launch ERROR:  %@", [aResult.launchError localizedDescription]);
     } else if (aResult.executionError != nil) {
-      DDLogError(@"there was an execution error: %@", [aResult.executionError localizedDescription]);
+      NSLog(@"ERROR: there was an execution ERROR:  %@", [aResult.executionError localizedDescription]);
     } else if (aResult.stdOutput == nil || [aResult.stdOutput length] == 0) {
-      DDLogError(@"expected some output to standard out - found < %@ >", aResult.stdOutput);
+      NSLog(@"ERROR: expected some output to standard out - found < %@ >", aResult.stdOutput);
     } else {
-      DDLogDebug(@"setting defaults launch path to %@", aResult.stdOutput);
+      NSLog(@"setting defaults launch path to %@", aResult.stdOutput);
       self.defaultsLaunchPath = aResult.stdOutput;
     }
   } else {
-    DDLogError(@"unknown common name = %@", aName);
+    NSLog(@"ERROR: unknown common name = %@", aName);
     //NSAssert(NO, nil);
   }
 }
 
 
 - (void) asyncFindIfConfigLaunchPath {
-  DDLogDebug(@"starting async find of ifconfig launch path");
+  NSLog(@"starting async find of ifconfig launch path");
   LjsUnixOperation *uop = [[[LjsUnixOperation alloc]
                            initWithLaunchPath:LjsUnixWhichWhichLaunchPath
                            launchArgs:[NSArray arrayWithObject:LjsUnixWhichIfconfig]
@@ -134,7 +126,7 @@ static NSString *LjsUnixWhichDefaultsCommandName = @"me.twistedpair.TwistedPair 
 }
 
 - (void) asyncFindIpConfigLaunchPath {
-  DDLogDebug(@"starting async find of ipconfig launch path");
+  NSLog(@"starting async find of ipconfig launch path");
   LjsUnixOperation *uop = [[[LjsUnixOperation alloc]
                            initWithLaunchPath:LjsUnixWhichWhichLaunchPath
                            launchArgs:[NSArray arrayWithObject:LjsUnixWhichIpconfig]
@@ -145,7 +137,7 @@ static NSString *LjsUnixWhichDefaultsCommandName = @"me.twistedpair.TwistedPair 
 }
 
 - (void) asyncFindDefaultsLaunchPath {
-  DDLogDebug(@"starting async find of defaults launch path");
+  NSLog(@"starting async find of defaults launch path");
   LjsUnixOperation *uop = [[[LjsUnixOperation alloc]
                            initWithLaunchPath:LjsUnixWhichWhichLaunchPath
                            launchArgs:[NSArray arrayWithObject:LjsUnixWhichDefaults]

@@ -395,6 +395,7 @@
 					USE_EN1,
 				);
 				INFOPLIST_FILE = "Tests-Unix/Tests-Unix-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -411,6 +412,7 @@
 					USE_EN1,
 				);
 				INFOPLIST_FILE = "Tests-Unix/Tests-Unix-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

@@ -1,13 +1,4 @@
 #import "LjsUnixOperation.h"
-#import "Lumberjack.h"
-
-
-
-#ifdef LOG_CONFIGURATION_DEBUG
-static const int ddLogLevel = LOG_LEVEL_DEBUG;
-#else
-static const int ddLogLevel = LOG_LEVEL_WARN;
-#endif
 
 // the error domain
 NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Operation";
@@ -28,8 +19,6 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
 
 #pragma mark Memory Management
 - (void) dealloc {
-  //DDLogDebug(@"deallocating LjsUnixOperation");
-  //[[NSNotificationCenter defaultCenter] removeObserver:self];
   [[NSNotificationCenter defaultCenter] removeObserver:self 
                                                   name:NSFileHandleDataAvailableNotification
                                                 object:nil];
@@ -75,7 +64,6 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
     [data release];
     
     NSTask *tTask = [[NSTask alloc] init];
-    DDLogDebug(@"cur directory = %@", tTask.currentDirectoryPath);
     self.task = tTask;
     [tTask release];
     
@@ -129,7 +117,6 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
  @param aNotification the object of which is the file handle for stdout
  */
 - (void) handleStandardOutNotification:(NSNotification *) aNotification {
-  //DDLogDebug(@"received standard out notification");
   NSFileHandle *handle = (NSFileHandle *)[aNotification object];
   
   @try {
@@ -143,7 +130,7 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
   }
   @catch (NSException *exception) {
     // this can can happen if the operation is cancelled
-    DDLogDebug(@"caught exception - nothing to do: %@", exception);
+    NSLog(@"caught exception - nothing to do: %@", exception);
   }
   @finally {
     
@@ -161,7 +148,6 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
  @param aNotification the object of which is the file handle for stderr
  */
 - (void) handleStandardErrorNotification:(NSNotification *) aNotification {
-  //DDLogDebug(@"received standard error notification");
   NSFileHandle *handle = (NSFileHandle *)[aNotification object];
   @try {
     NSData *availableData = [handle availableData];
@@ -175,7 +161,7 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
   }
   @catch (NSException *exception) {
     // can happen if the operation is cancelled
-    DDLogDebug(@"caught exception - nothing to do: %@", exception);
+    NSLog(@"caught exception - nothing to do: %@", exception);
   }
   @finally {
     
@@ -189,7 +175,6 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
  @param aNotification ignored
  */
 - (void) handleTaskTerminatedNotification:(NSNotification *) aNotification {
-  //DDLogDebug(@"received task terminated notification");
   self.taskComplete = YES;
 }
 
@@ -243,10 +228,7 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
 - (void) main {
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
   if (![self isCancelled]) {
-    //NSString *args = [[self.task arguments] componentsJoinedByString:@" "];
-    //DDLogDebug(@"unix operation: %@: %@ %@ has started",
-    //           self.commonName, [self.task launchPath], args);
-   
+  
     // I do not think this is necessary
     NSDictionary *environment = [[NSProcessInfo processInfo] environment];
     [self.task setEnvironment:environment];
@@ -263,11 +245,11 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
       // to ever be sent.
       while (!self.outputClosed || !self.errorClosed) {
 
-        // DDLogDebug(@"is running       => %d", [self.task isRunning]);
-        // DDLogDebug(@"is error closed  => %d", self.errorClosed);
-        // DDLogDebug(@"is output closed => %d", self.outputClosed);
-        // DDLogDebug(@"is cancelled     => %d", [self isCancelled]);
-        // DDLogDebug(@"is complete      => %d", self.taskComplete);
+        // NSLog(@"is running       => %d", [self.task isRunning]);
+        // NSLog(@"is error closed  => %d", self.errorClosed);
+        // NSLog(@"is output closed => %d", self.outputClosed);
+        // NSLog(@"is cancelled     => %d", [self isCancelled]);
+        // NSLog(@"is complete      => %d", self.taskComplete);
         
         // could be put in the while invariant, but there are so many conditions
         // it becomes unclear what is really driving the loop.
@@ -284,10 +266,8 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
       
       outputString = [self stringWithData:self.standardOutput];
       errorString = [self stringWithData:self.standardError];
-      // DDLogDebug(@"output string = %@", outputString);
-      // DDLogError(@"error string = %@", errorString);
     } @catch (NSException *exception) {
-      DDLogError(@"received this exception: %@", exception);
+      NSLog(@"received this exception: %@", exception);
       launchError = [self errorWithException:exception];
     } @finally {
       if ([self.task isRunning]) {
@@ -298,8 +278,6 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
       [[[self.task standardOutput] fileHandleForReading] closeFile];
     }
     
-    
-    //DDLogDebug(@"operation completed");
     
     NSError *executionError = [self errorWithStandardErrorString:errorString];
     NSInteger taskExitCode = LjsUnixOperationExecutionErrorCode;
@@ -329,13 +307,10 @@ NSString *LjsUnixOperationTaskErrorDomain = @"com.littlejoysoftware.Ljs Unix Ope
                                       wasCancelled:[self isCancelled]];
                                        
     if (self.callbackDelegate != nil) {
-      //DDLogDebug(@"making callback to delegate");
       [self.callbackDelegate operationCompletedWithName:self.commonName
                                                  result:tResult];
       [tResult release];
-    } else {
-      //DDLogDebug(@"callback delegate is nil - no callback possible");
-    }
+    } 
   }
   [pool release];
 }

@@ -1,12 +1,4 @@
 #import "LjsUnixAppDelegate.h"
-#import "Lumberjack.h"
-
-#ifdef LOG_CONFIGURATION_DEBUG
-static const int ddLogLevel = LOG_LEVEL_DEBUG;
-#else
-static const int ddLogLevel = LOG_LEVEL_WARN;
-#endif
-
 
 
 static NSString *TpUnixOperationTestsCommandLs = @"ls";
@@ -28,7 +20,7 @@ static NSString *TpUnixOperationTestsDoAirDropRead = @"airdrop read";
 
 
 - (void) stopAndReleaseRepeatingTimers {
-  DDLogDebug(@"stopping long running find timer");
+  NSLog(@"stopping long running find timer");
   if (self.cancelOpTimer != nil) {
     [self.cancelOpTimer invalidate];
     self.cancelOpTimer = nil;
@@ -36,7 +28,7 @@ static NSString *TpUnixOperationTestsDoAirDropRead = @"airdrop read";
 }
 
 - (void) startAndRetainRepeatingTimers {
-  DDLogDebug(@"starting long running find timer");
+  NSLog(@"starting long running find timer");
   if (self.cancelOpTimer != nil) {
     [self.cancelOpTimer invalidate];
     self.cancelOpTimer = nil;
@@ -54,8 +46,7 @@ static NSString *TpUnixOperationTestsDoAirDropRead = @"airdrop read";
 
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-  [LjsLogging startLoggingWithASL:NO withFileLogging:NO];
-  DDLogDebug(@"application did finish launching");
+  NSLog(@"application did finish launching");
   
   self.opqueue = [[NSOperationQueue alloc] init];
   
@@ -71,26 +62,26 @@ static NSString *TpUnixOperationTestsDoAirDropRead = @"airdrop read";
 
 - (void) operationCompletedWithName:(NSString *) aName
                              result:(LjsUnixOperationResult *) aResult {
-  DDLogDebug(@"operation %@ completed with %@", aName, aResult);
+  NSLog(@"operation %@ completed with %@", aName, aResult);
   if ([TpUnixOperationTestsCommandLs isEqualToString:aName]) {
     // nothing to test
   } else if ([TpUnixOperationTestsCommandLongRunningFind isEqualToString:aName]) {
     //DDLogError(@"did not expect this to finish before it was cancelled");
     // lets see what we found
-    DDLogDebug(@"find results before cancel = %@", aResult);
+    NSLog(@"find results before cancel = %@", aResult);
   } else if ([TpUnixOperationTestsCommandLocate isEqualToString:aName]) {
-    DDLogDebug(@"no test available");
+    NSLog(@"no test available");
   } else if ([TpUnixOperationTestsIpconfigGetIfaddr isEqualToString:aName]) {
-    DDLogDebug(@"no conclusive test possible");
+    NSLog(@"no conclusive test possible");
   } else if ([TpUnixOperationTestsIfconfigUpOrDown isEqualToString:aName]) {
-    DDLogDebug(@"no conclusive test possible");
+    NSLog(@"no conclusive test possible");
   } else if ([TpUnixOperationTestsDoCommandThatWillFail isEqualToString:aName]) {
     BOOL result = [aResult.errOutput isEqualToString:@"ifconfig: interface status does not exist"];
     NSAssert(result, nil);
   } else if ([TpUnixOperationTestsDoAirDropRead isEqualToString:aName]) {
-    DDLogDebug(@"result = %@", aResult);
+    NSLog(@"result = %@", aResult);
   } else {
-    DDLogError(@"unknown common name: %@", aName);
+    NSLog(@"ERROR: unknown common name: %@", aName);
     NSAssert(NO, nil);
   }
 }
@@ -127,7 +118,7 @@ static NSString *TpUnixOperationTestsDoAirDropRead = @"airdrop read";
 }
 
 - (void) handleCancelOperationTimerEvent:(NSTimer *) aTimer {
-  DDLogDebug(@"handling cancel operation timer event - cancelling long running find");
+  NSLog(@"handling cancel operation timer event - cancelling long running find");
   [self.longRunningFindOp cancel];
   [self stopAndReleaseRepeatingTimers];
   self.longRunningFindOp = nil;
@@ -148,11 +139,7 @@ static NSString *TpUnixOperationTestsDoAirDropRead = @"airdrop read";
 }
 
 
-
-
 - (void) doIpconfigGetIfaddr {
-  ///usr/sbin/ipconfig
-  //ipconfig getifaddr en1
   NSString *command = @"/usr/sbin/ipconfig";
   NSArray *args = [NSArray arrayWithObjects:@"getifaddr", @"en0", nil];
   LjsUnixOperation *uop = [[LjsUnixOperation alloc]
@@ -179,8 +166,6 @@ static NSString *TpUnixOperationTestsDoAirDropRead = @"airdrop read";
 }
 
 - (void) doReadDefaultsForAirDrop {
-  //com.apple.NetworkBrowser BrowseAllInterfaces
-  
   NSString *command = @"/usr/bin/defaults";
   NSArray *args = [NSArray arrayWithObjects:@"read", @"com.apple.NetworkBrowser", @"BrowseAllInterfaces", nil];
   
